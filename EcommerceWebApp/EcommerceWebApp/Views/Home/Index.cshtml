@@ -24,9 +24,9 @@
     </form>
 </section>
 
-<!-- Product Cards -->
+
 <section class="product-grid">
-    <!-- Example for one product with itemID=1 -->
+    
     <article class="product-card">
         <div class="product-image">
             <span>Image</span>
@@ -37,12 +37,11 @@
                 <span class="amount">5.99</span>
             </p>
             <p class="description">Product #1</p>
-            <!-- The "Add" button calls a JavaScript function instead of posting a form -->
+           
             <button class="add-button" onclick="addToCartAjax(1)">+</button>
         </div>
     </article>
 
-    <!-- Repeat for itemID=2, itemID=3, etc. -->
     <article class="product-card">
         <div class="product-image"><span>Image</span></div>
         <div class="product-info">
@@ -75,16 +74,15 @@
             <button class="add-button" onclick="addToCartAjax(2)">+</button>
         </div>
     </article>
-    <!-- etc. -->
+   
 </section>
 
 @section Scripts {
     <script>
-        // A simple function to call AddToCartAjax using fetch,
-        // then show an alert with the result
+        
         function addToCartAjax(itemID) {
             fetch('/Home/AddToCartAjax?itemID=' + itemID, {
-                method: 'POST' // It's a POST call
+                method: 'POST' 
             })
             .then(response => response.json())
             .then(data => {

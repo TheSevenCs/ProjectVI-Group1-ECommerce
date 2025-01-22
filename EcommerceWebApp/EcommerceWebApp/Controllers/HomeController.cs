@@ -7,7 +7,7 @@ namespace YourProject.Controllers
 {
     public class HomeController : Controller
     {
-        // In-memory cart: store your Item objects or item IDs
+        
         private static List<Item> CartItems = new List<Item>();
 
         public IActionResult Index()
@@ -15,7 +15,7 @@ namespace YourProject.Controllers
             return View();
         }
 
-        // Displays the cart page
+       
         public IActionResult Cart()
         {
             ViewBag.CartItems = CartItems;
@@ -26,7 +26,7 @@ namespace YourProject.Controllers
         [HttpPost]
         public IActionResult AddToCartAjax(int itemID)
         {
-            // 1) Create or find the item. For demonstration, a simple placeholder:
+           
             var newItem = new Item
             {
                 ItemID = itemID,
@@ -35,10 +35,10 @@ namespace YourProject.Controllers
                 Quantity = 1
             };
 
-            // 2) Add this to your in-memory cart (if you have a static List<Item> CartItems)
+
             CartItems.Add(newItem);
 
-            // 3) Return a JSON response with success = true
+           
             return Json(new
             {
                 success = true,
