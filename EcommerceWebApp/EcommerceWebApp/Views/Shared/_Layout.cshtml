@@ -1,0 +1,30 @@
+﻿@{
+    Layout = null; 
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title - My Shopping Site</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header class="top-nav">
+        <nav>
+            <ul>
+                <li><a href="@Url.Action("Index", "Home")">Home</a></li>
+                <li><a href="@Url.Action("Cart", "Home")">Shopping Car</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="body-content">
+        @RenderBody()
+        @RenderSection("Scripts", required: false)
+    </div>
+
+    <footer class="site-footer">
+        &copy; 2025 My Shopping Site
+    </footer>
+</body>
+</html>
