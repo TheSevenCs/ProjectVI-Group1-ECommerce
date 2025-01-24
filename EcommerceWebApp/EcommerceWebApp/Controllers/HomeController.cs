@@ -1,13 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
-using YourProject.Models;
+using EcommerceWebApp.Models;
 
-namespace YourProject.Controllers
+namespace EcommerceWebApp.Controllers
 {
     public class HomeController : Controller
     {
-        
         private static List<Item> CartItems = new List<Item>();
 
         public IActionResult Index()
@@ -15,18 +14,15 @@ namespace YourProject.Controllers
             return View();
         }
 
-       
         public IActionResult Cart()
         {
             ViewBag.CartItems = CartItems;
             return View();
         }
 
-        // Add item to cart
         [HttpPost]
         public IActionResult AddToCartAjax(int itemID)
         {
-           
             var newItem = new Item
             {
                 ItemID = itemID,
@@ -35,10 +31,8 @@ namespace YourProject.Controllers
                 Quantity = 1
             };
 
-
             CartItems.Add(newItem);
 
-           
             return Json(new
             {
                 success = true,
@@ -59,8 +53,17 @@ namespace YourProject.Controllers
         public IActionResult DecreaseQuantity(int itemID)
         {
             var cartItem = CartItems.FirstOrDefault(ci => ci.ItemID == itemID);
-            if (cartItem != null && cartItem.Quantity > 1)
-                cartItem.Quantity--;
+            if (cartItem != null)
+            {
+                if (cartItem.Quantity > 1)
+                {
+                    cartItem.Quantity--;
+                }
+                else
+                {
+                    CartItems.Remove(cartItem);
+                }
+            }
             return RedirectToAction("Cart");
         }
 
@@ -71,6 +74,14 @@ namespace YourProject.Controllers
             if (cartItem != null)
                 CartItems.Remove(cartItem);
             return RedirectToAction("Cart");
+        }
+
+        [HttpPost]
+        public IActionResult Checkout()
+        {
+            CartItems.Clear();
+
+            return RedirectToAction("Index");
         }
     }
 }

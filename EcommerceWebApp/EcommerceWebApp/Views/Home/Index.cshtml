@@ -24,9 +24,7 @@
     </form>
 </section>
 
-
 <section class="product-grid">
-    
     <article class="product-card">
         <div class="product-image">
             <span>Image</span>
@@ -37,7 +35,6 @@
                 <span class="amount">5.99</span>
             </p>
             <p class="description">Product #1</p>
-           
             <button class="add-button" onclick="addToCartAjax(1)">+</button>
         </div>
     </article>
@@ -74,12 +71,10 @@
             <button class="add-button" onclick="addToCartAjax(2)">+</button>
         </div>
     </article>
-   
 </section>
 
 @section Scripts {
     <script>
-        
         function addToCartAjax(itemID) {
             fetch('/Home/AddToCartAjax?itemID=' + itemID, {
                 method: 'POST' 

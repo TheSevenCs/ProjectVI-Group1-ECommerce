@@ -1,3 +1,4 @@
+
 * {
     margin: 0;
     padding: 0;
@@ -10,18 +11,15 @@ body {
     display: flex;
     flex-direction: column;
 }
-
 html, body {
     height: 100%;
     margin: 0;
     padding: 0;
 }
-
 .body-content {
     flex: 1 0 auto;
     padding: 20px;
 }
-
 
 .site-footer {
     flex-shrink: 0;
@@ -30,7 +28,6 @@ html, body {
     background-color: #eee;
     border-top: 1px solid #ccc;
 }
-
 
 .top-nav {
     background-color: #eee;
@@ -55,14 +52,12 @@ html, body {
     padding: 20px;
 }
 
-
 .site-footer {
     text-align: center;
     padding: 10px;
     background-color: #eee;
     border-top: 1px solid #ccc;
 }
-
 
 .category-panel {
     background-color: #fff;
@@ -96,12 +91,11 @@ html, body {
         background-color: #0056b3;
     }
 
-
 .product-grid {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap; 
-    gap: 20px; 
+    gap: 20px;
 }
 
 .product-card {
@@ -115,7 +109,6 @@ html, body {
     align-items: center;
     text-align: center;
 }
-
 
 .product-image {
     background-color: #eaeaea;
@@ -132,7 +125,6 @@ html, body {
         font-size: 0.9rem;
     }
 
-
 .price {
     display: flex;
     align-items: baseline;
@@ -141,7 +133,7 @@ html, body {
 }
 
 .dollar-symbol {
-    color: #28a745; 
+    color: #28a745;
     font-size: 1rem;
     margin-right: 4px;
 }
@@ -157,7 +149,6 @@ html, body {
     margin-bottom: 10px;
 }
 
-
 .add-button {
     background-color: #28a745;
     color: #fff;
@@ -171,6 +162,7 @@ html, body {
     .add-button:hover {
         background-color: #218838;
     }
+
 @media (max-width: 768px) {
     .checkbox-row {
         flex-direction: column;
@@ -185,13 +177,11 @@ html, body {
     }
 }
 
-
 .cart-container {
     margin: 20px auto;
-    max-width: 1500px; 
+    max-width: 1500px;
     padding: 10px;
 }
-
 
 .cart-item {
     border: 1px solid #ccc;
@@ -205,11 +195,9 @@ html, body {
     min-height: 120px;
 }
 
-
 .large-item {
     min-height: 150px; 
 }
-
 
 .placeholder-row {
     height: 100px; 
@@ -217,7 +205,6 @@ html, body {
     align-items: center;
     justify-content: flex-start;
 }
-
 
 .left-section {
     display: flex;
@@ -228,10 +215,9 @@ html, body {
     margin-right: 10px;
 }
 
-
 .item-image {
-    width: 80px;
-    height: 80px;
+    width: 80px; 
+    height: 80px; 
     background-color: #eaeaea;
     display: flex;
     align-items: center;
@@ -242,22 +228,22 @@ html, body {
 
     .item-image span {
         color: #666;
-        font-size: 0.9rem; 
+        font-size: 0.9rem;
     }
 
 .item-description {
-    font-size: 1rem; 
+    font-size: 1rem;
     color: #555;
 }
-
 
 .right-section {
     display: flex;
     align-items: center;
-    gap: 10px; 
-}
-
-.quantity-controls {
+    gap: 10px;
+} 
+    
+ .quantity-controls
+{
     display: flex;
     align-items: center;
     gap: 4px;
@@ -280,7 +266,6 @@ html, body {
     text-align: center;
 }
 
-
 .item-price {
     font-weight: bold;
     display: flex;
@@ -298,7 +283,6 @@ html, body {
     font-size: 1rem;
 }
 
-
 .remove-button {
     background-color: #dc3545;
     color: #fff;
@@ -308,6 +292,34 @@ html, body {
     cursor: pointer;
 }
 
-    .remove-button:hover {
-        background-color: #c82333;
+.remove-button:hover {
+   background-color: #c82333;
+}
+
+.cart-summary {
+    position: fixed;
+    bottom: 50px; 
+    right: 20px;
+    background-color: #fff;
+    border-radius: 6px;
+}
+
+    .cart-summary p {
+        font-size: 1.25rem;
+        font-weight: bold;
+        margin: 7px 0;
+    }
+.checkout-button {
+    background-color: #ffa500; 
+    color: #fff;
+    border: none;
+    font-size: 1.25rem; 
+    padding: 12px 24px; 
+    border-radius: 6px;
+    cursor: pointer;
+
+}
+
+    .checkout-button:hover {
+        background-color: #e69500;
     }

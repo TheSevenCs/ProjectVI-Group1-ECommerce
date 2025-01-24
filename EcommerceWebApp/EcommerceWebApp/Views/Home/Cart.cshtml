@@ -1,13 +1,14 @@
-﻿@using YourProject.Models
+﻿@using EcommerceWebApp.Models
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Cart Page";
 }
 
 <section class="cart-container">
-    @if (ViewBag.CartItems != null)
+    @if (ViewBag.CartItems != null && ((List<Item>)ViewBag.CartItems).Count > 0)
     {
-        foreach (var cartItem in (List<Item>)ViewBag.CartItems)
+        var items = (List<Item>)ViewBag.CartItems;
+        foreach (var cartItem in items)
         {
             <div class="cart-item large-item">
                 <div class="left-section">
@@ -18,7 +19,6 @@
                     <p class="item-description">@cartItem.ItemName</p>
                 </div>
                 <div class="right-section">
-                    
                     <form method="post" action="@Url.Action("DecreaseQuantity", "Home")" style="display:inline;">
                         <input type="hidden" name="itemID" value="@cartItem.ItemID" />
                         <button type="submit" class="qty-button">-</button>
@@ -26,7 +26,6 @@
 
                     <span class="quantity-value">@cartItem.Quantity</span>
 
-                    
                     <form method="post" action="@Url.Action("IncreaseQuantity", "Home")" style="display:inline;">
                         <input type="hidden" name="itemID" value="@cartItem.ItemID" />
                         <button type="submit" class="qty-button">+</button>
@@ -37,14 +36,26 @@
                         <span class="money-amount">@cartItem.ItemPrice</span>
                     </span>
 
-                    
                     <form method="post" action="@Url.Action("RemoveItem", "Home")" style="display:inline;">
                         <input type="hidden" name="itemID" value="@cartItem.ItemID" />
-                        <button class="remove-button">Remove</button>
+                        <button type="submit" class="remove-button">Remove</button>
                     </form>
                 </div>
             </div>
         }
+
+        <div class="cart-summary">
+            <p>Total items: @items.Sum(x => x.Quantity)</p>
+            <p>
+                Total cost:
+                <span class="money-symbol">$</span>
+                @items.Sum(x => x.ItemPrice * x.Quantity).ToString("F2")
+            </p>
+
+            <form method="post" action="@Url.Action("Checkout", "Home")">
+                <button type="submit" class="checkout-button">Check Out</button>
+            </form>
+        </div>
     }
     else
     {

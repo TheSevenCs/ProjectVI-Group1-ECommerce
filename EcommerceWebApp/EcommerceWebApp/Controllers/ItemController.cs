@@ -2,9 +2,9 @@
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
-using YourProject.Models; 
+using EcommerceWebApp.Models; 
 
-namespace YourProject.Controllers
+namespace EcommerceWebApp.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -18,7 +18,6 @@ namespace YourProject.Controllers
             _logger = logger;
         }
 
-       
         [HttpPost("add")]
         public ActionResult<Item> AddItem(string name, float price, int quantity)
         {
@@ -30,7 +29,6 @@ namespace YourProject.Controllers
             return CreatedAtAction(nameof(GetItem), new { itemID = newItem.ItemID }, newItem);
         }
 
-        
         [HttpGet("{itemID}")]
         public ActionResult<Item> GetItem(int itemID)
         {
@@ -43,14 +41,12 @@ namespace YourProject.Controllers
             return item;
         }
 
-        
         [HttpGet]
         public ActionResult<List<Item>> GetAllItems()
         {
             return _items;
         }
 
-       
         [HttpDelete("{itemID}")]
         public IActionResult DeleteItem(int itemID)
         {
