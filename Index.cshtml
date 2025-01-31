@@ -1,0 +1,96 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Home";
+}
+
+<section class="category-panel">
+    <form method="get" action="@Url.Action("Index", "Home")">
+        <div class="checkbox-row">
+            <label><input type="checkbox" name="categories" value="Beverages"> Beverages</label>
+            <label><input type="checkbox" name="categories" value="Deli"> Deli</label>
+            <label><input type="checkbox" name="categories" value="Meat"> Meat</label>
+        </div>
+        <div class="checkbox-row">
+            <label><input type="checkbox" name="categories" value="Bread"> Bread</label>
+            <label><input type="checkbox" name="categories" value="Fruits"> Fruits</label>
+            <label><input type="checkbox" name="categories" value="Pharmacy"> Pharmacy</label>
+        </div>
+        <div class="checkbox-row">
+            <label><input type="checkbox" name="categories" value="Dairy"> Dairy</label>
+            <label><input type="checkbox" name="categories" value="Health"> Health</label>
+            <label><input type="checkbox" name="categories" value="Snack"> Snack</label>
+        </div>
+        <button type="submit" class="filter-button">Filter</button>
+    </form>
+</section>
+
+<section class="product-grid">
+    <article class="product-card">
+        <div class="product-image">
+            <span>Image</span>
+        </div>
+        <div class="product-info">
+            <p class="price">
+                <span class="dollar-symbol">$</span>
+                <span class="amount">5.99</span>
+            </p>
+            <p class="description">Product #1</p>
+            <button class="add-button" onclick="addToCartAjax(1)">+</button>
+        </div>
+    </article>
+
+    <article class="product-card">
+        <div class="product-image"><span>Image</span></div>
+        <div class="product-info">
+            <p class="price">
+                <span class="dollar-symbol">$</span>
+                <span class="amount">6.99</span></p>
+            <p class="description">Product #2</p>
+            <button class="add-button" onclick="addToCartAjax(2)">+</button>
+        </div>
+    </article>
+    <article class="product-card">
+        <div class="product-image"><span>Image</span></div>
+        <div class="product-info">
+            <p class="price">
+                <span class="dollar-symbol">$</span>
+                <span class="amount">7.99</span>
+            </p>
+            <p class="description">Product #3</p>
+            <button class="add-button" onclick="addToCartAjax(2)">+</button>
+        </div>
+    </article>
+    <article class="product-card">
+        <div class="product-image"><span>Image</span></div>
+        <div class="product-info">
+            <p class="price">
+                <span class="dollar-symbol">$</span>
+                <span class="amount">8.99</span>
+            </p>
+            <p class="description">Product #4</p>
+            <button class="add-button" onclick="addToCartAjax(2)">+</button>
+        </div>
+    </article>
+</section>
+
+@section Scripts {
+    <script>
+        function addToCartAjax(itemID) {
+            fetch('/Home/AddToCartAjax?itemID=' + itemID, {
+                method: 'POST' 
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message); 
+                } else {
+                    alert("Failed to add item to cart.");
+                }
+            })
+            .catch(error => {
+                console.error("Error in addToCartAjax:", error);
+                alert("Something went wrong adding the item to the cart.");
+            });
+        }
+    </script>
+}
