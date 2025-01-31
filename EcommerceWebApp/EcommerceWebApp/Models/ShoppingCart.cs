@@ -1,9 +1,13 @@
+using System.Runtime.CompilerServices;
+[assembly: InternalsVisibleTo("EcommerceWebApp.Handlers")]
+
+
 namespace EcommerceWebApp.Models
 {
     internal class ShoppingCart
     {
         public int UserID { get; private set; }
-        private List<Item> items = new List<Item>();
+        internal List<Item> items = new List<Item>();
         internal ShoppingCart(int userID, List<Item> items) // loading shopping carts
         {
             this.UserID = userID;

@@ -1,11 +1,12 @@
-﻿using EcommerceWebApp.Models;
+﻿using EcommerceWebApp.Controllers;
+using EcommerceWebApp.Models;
 using Microsoft.Data.SqlClient;
 
 namespace EcommerceWebApp.Handlers
 {
     public class DBHandler
     {
-        private readonly string _connectionString;
+        private readonly string? _connectionString;
 
         public DBHandler(IConfiguration configuration)
         {
@@ -13,7 +14,7 @@ namespace EcommerceWebApp.Handlers
         }
 
         // Get Item by ID
-        public Item GetItemByID(int itemID)
+        public Item? GetItemByID(int itemID)
         {
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
@@ -72,7 +73,7 @@ namespace EcommerceWebApp.Handlers
         }
 
         // Save Shopping Cart
-        public void SaveCart(ShoppingCart cart)
+        internal void SaveCart(ShoppingCart cart)
         {
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
@@ -84,7 +85,7 @@ namespace EcommerceWebApp.Handlers
                     deleteCmd.ExecuteNonQuery();
                 }
 
-                foreach (var item in cart.Items)
+                foreach (var item in cart.items)
                 {
                     string insertQuery = "INSERT INTO CartItems (UserID, ItemID, ItemName, ItemPrice, Quantity) VALUES (@UserID, @ItemID, @ItemName, @ItemPrice, @Quantity)";
                     using (SqlCommand cmd = new SqlCommand(insertQuery, conn))
@@ -101,7 +102,7 @@ namespace EcommerceWebApp.Handlers
         }
 
         // Load Shopping Cart
-        public ShoppingCart LoadCart(int userID)
+        internal ShoppingCart LoadCart(int userID)
         {
             List<Item> items = new List<Item>();
 
@@ -129,24 +130,24 @@ namespace EcommerceWebApp.Handlers
                 }
             }
 
-            return new ShoppingCart(userID, items);
+            return new ShoppingCart(userID, items);  // This now works!
         }
 
         // Update Shopping Cart
-        public void UpdateCart(int cartID, ShoppingCart cart)
+        internal void UpdateCart(int cartID, ShoppingCart cart)
         {
             DeleteCart(cartID);
             SaveCart(cart);
         }
 
         // Patch Cart (Partial Updates)
-        public void PatchCart(int cartID, ShoppingCart changes)
+        internal void PatchCart(int cartID, ShoppingCart changes)
         {
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
 
-                foreach (var item in changes.Items)
+                foreach (var item in changes.items)
                 {
                     string query = "UPDATE CartItems SET Quantity = @Quantity WHERE UserID = @UserID AND ItemID = @ItemID";
                     using (SqlCommand cmd = new SqlCommand(query, conn))

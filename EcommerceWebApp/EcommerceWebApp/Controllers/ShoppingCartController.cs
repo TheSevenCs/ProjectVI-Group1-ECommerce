@@ -10,6 +10,10 @@ namespace EcommerceWebApp.Controllers
         {
             _shoppingCart = new ShoppingCart(userID);
         }
+        public ShoppingCartController(int userID, List<Item> items)
+        {
+            _shoppingCart = new ShoppingCart(userID, items);
+        }
 
         public void AddItemToCart(Item item, int quantity)
         {
