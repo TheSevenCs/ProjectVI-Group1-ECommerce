@@ -1,4 +1,4 @@
-﻿namespace EcommerceWebApp.Models
+namespace EcommerceWebApp.Models
 {
     public class Item
     {
