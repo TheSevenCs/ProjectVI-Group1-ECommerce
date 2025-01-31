@@ -1,0 +1,27 @@
+services:
+  ecommerce-app:
+    build: .
+    container_name: ecommerce-container
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql-db
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=mysql-db;Database=ecommerce;User=root;Password=rootpassword;
+
+  mysql-db:
+    image: mysql:8.0
+    container_name: ecommerce-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: ecommerce
+      MYSQL_USER: ecommerceuser
+      MYSQL_PASSWORD: ecommercepassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:

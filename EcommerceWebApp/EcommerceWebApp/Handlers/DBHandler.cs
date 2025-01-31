@@ -1,6 +1,6 @@
 ﻿using EcommerceWebApp.Controllers;
 using EcommerceWebApp.Models;
-using Microsoft.Data.SqlClient;
+using MySql.Data.MySqlClient;
 
 namespace EcommerceWebApp.Handlers
 {
@@ -16,15 +16,15 @@ namespace EcommerceWebApp.Handlers
         // Get Item by ID
         public Item? GetItemByID(int itemID)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (var conn = new MySqlConnection(_connectionString))
             {
                 conn.Open();
                 string query = "SELECT ItemID, ItemName, ItemPrice, Quantity FROM Items WHERE ItemID = @ItemID";
 
-                using (SqlCommand cmd = new SqlCommand(query, conn))
+                using (var cmd = new MySqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@ItemID", itemID);
-                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    using (var reader = cmd.ExecuteReader())
                     {
                         if (reader.Read())
                         {
@@ -45,16 +45,16 @@ namespace EcommerceWebApp.Handlers
         // Get Items by Category
         public List<Item> GetItemsByCategory(string itemCategory)
         {
-            List<Item> items = new List<Item>();
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            var items = new List<Item>();
+            using (var conn = new MySqlConnection(_connectionString))
             {
                 conn.Open();
                 string query = "SELECT ItemID, ItemName, ItemPrice, Quantity FROM Items WHERE Category = @Category";
 
-                using (SqlCommand cmd = new SqlCommand(query, conn))
+                using (var cmd = new MySqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@Category", itemCategory);
-                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
@@ -75,11 +75,11 @@ namespace EcommerceWebApp.Handlers
         // Save Shopping Cart
         internal void SaveCart(ShoppingCart cart)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (var conn = new MySqlConnection(_connectionString))
             {
                 conn.Open();
                 string deleteQuery = "DELETE FROM CartItems WHERE UserID = @UserID";
-                using (SqlCommand deleteCmd = new SqlCommand(deleteQuery, conn))
+                using (var deleteCmd = new MySqlCommand(deleteQuery, conn))
                 {
                     deleteCmd.Parameters.AddWithValue("@UserID", cart.UserID);
                     deleteCmd.ExecuteNonQuery();
@@ -88,7 +88,7 @@ namespace EcommerceWebApp.Handlers
                 foreach (var item in cart.items)
                 {
                     string insertQuery = "INSERT INTO CartItems (UserID, ItemID, ItemName, ItemPrice, Quantity) VALUES (@UserID, @ItemID, @ItemName, @ItemPrice, @Quantity)";
-                    using (SqlCommand cmd = new SqlCommand(insertQuery, conn))
+                    using (var cmd = new MySqlCommand(insertQuery, conn))
                     {
                         cmd.Parameters.AddWithValue("@UserID", cart.UserID);
                         cmd.Parameters.AddWithValue("@ItemID", item.ItemID);
@@ -104,17 +104,17 @@ namespace EcommerceWebApp.Handlers
         // Load Shopping Cart
         internal ShoppingCart LoadCart(int userID)
         {
-            List<Item> items = new List<Item>();
+            var items = new List<Item>();
 
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (var conn = new MySqlConnection(_connectionString))
             {
                 conn.Open();
                 string query = "SELECT ItemID, ItemName, ItemPrice, Quantity FROM CartItems WHERE UserID = @UserID";
 
-                using (SqlCommand cmd = new SqlCommand(query, conn))
+                using (var cmd = new MySqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@UserID", userID);
-                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
@@ -130,7 +130,7 @@ namespace EcommerceWebApp.Handlers
                 }
             }
 
-            return new ShoppingCart(userID, items);  // This now works!
+            return new ShoppingCart(userID, items);
         }
 
         // Update Shopping Cart
@@ -143,14 +143,14 @@ namespace EcommerceWebApp.Handlers
         // Patch Cart (Partial Updates)
         internal void PatchCart(int cartID, ShoppingCart changes)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (var conn = new MySqlConnection(_connectionString))
             {
                 conn.Open();
 
                 foreach (var item in changes.items)
                 {
                     string query = "UPDATE CartItems SET Quantity = @Quantity WHERE UserID = @UserID AND ItemID = @ItemID";
-                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    using (var cmd = new MySqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@UserID", cartID);
                         cmd.Parameters.AddWithValue("@ItemID", item.ItemID);
@@ -162,16 +162,16 @@ namespace EcommerceWebApp.Handlers
         }
 
         // Add Item to Cart
-        public void AddItem(string ItemName, float price, int quantity)
+        public void AddItem(string itemName, float price, int quantity)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (var conn = new MySqlConnection(_connectionString))
             {
                 conn.Open();
                 string query = "INSERT INTO Items (ItemName, ItemPrice, Quantity) VALUES (@ItemName, @Price, @Quantity)";
 
-                using (SqlCommand cmd = new SqlCommand(query, conn))
+                using (var cmd = new MySqlCommand(query, conn))
                 {
-                    cmd.Parameters.AddWithValue("@ItemName", ItemName);
+                    cmd.Parameters.AddWithValue("@ItemName", itemName);
                     cmd.Parameters.AddWithValue("@Price", price);
                     cmd.Parameters.AddWithValue("@Quantity", quantity);
                     cmd.ExecuteNonQuery();
@@ -182,12 +182,12 @@ namespace EcommerceWebApp.Handlers
         // Delete Item
         public void DeleteItem(int itemID)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (var conn = new MySqlConnection(_connectionString))
             {
                 conn.Open();
                 string query = "DELETE FROM Items WHERE ItemID = @ItemID";
 
-                using (SqlCommand cmd = new SqlCommand(query, conn))
+                using (var cmd = new MySqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@ItemID", itemID);
                     cmd.ExecuteNonQuery();
@@ -196,16 +196,16 @@ namespace EcommerceWebApp.Handlers
         }
 
         // Delete Cart
-        public void DeleteCart(int cartID)
+        public void DeleteCart(int userID)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (var conn = new MySqlConnection(_connectionString))
             {
                 conn.Open();
                 string query = "DELETE FROM CartItems WHERE UserID = @UserID";
 
-                using (SqlCommand cmd = new SqlCommand(query, conn))
+                using (var cmd = new MySqlCommand(query, conn))
                 {
-                    cmd.Parameters.AddWithValue("@UserID", cartID);
+                    cmd.Parameters.AddWithValue("@UserID", userID);
                     cmd.ExecuteNonQuery();
                 }
             }
@@ -215,16 +215,15 @@ namespace EcommerceWebApp.Handlers
         {
             try
             {
-                using (SqlConnection conn = new SqlConnection(_connectionString))
+                using (var conn = new MySqlConnection(_connectionString))
                 {
                     conn.Open();
-                    return true; // Connection successful
+                    return true;
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Database connection error: {ex.Message}");
-                return false; // Connection failed
+                return false;
             }
         }
     }
