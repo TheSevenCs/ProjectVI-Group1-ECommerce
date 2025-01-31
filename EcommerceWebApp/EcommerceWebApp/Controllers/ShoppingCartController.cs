@@ -1,12 +1,14 @@
+using EcommerceWebApp.Models;
+
 namespace EcommerceWebApp.Controllers
 {
     public class ShoppingCartController
     {
         private readonly ShoppingCart _shoppingCart;
 
-        public ShoppingCartController()
+        public ShoppingCartController(int userID)
         {
-            _shoppingCart = new ShoppingCart();
+            _shoppingCart = new ShoppingCart(userID);
         }
 
         public void AddItemToCart(Item item, int quantity)
@@ -19,14 +21,14 @@ namespace EcommerceWebApp.Controllers
             _shoppingCart.RemoveItem(productId, Quantity);
         }
 
-        public void ViewCart()
+        public List<Item> ViewCart()
         {
-            // Logic to view cart
+            return _shoppingCart.items;
         }
 
         public void CheckoutCart()
         {
-            // Logic to checkout
+            _shoppingCart.ClearCart();
         }
     }
 }
