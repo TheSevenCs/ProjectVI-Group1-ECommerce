@@ -20,10 +20,10 @@ namespace EcommerceWebApp.Controllers
         }
 
         [HttpPost("add")]
-        public ActionResult<Item> AddItem(string name, float price, int quantity)
+        public ActionResult<Item> AddItem(string name, float price, int quantity, string description, string imagePath)
         {
             int newId = _items.Count + 1;
-            var newItem = new Item(newId, name, quantity, price);
+            var newItem = new Item(newId, name, quantity, price, description, imagePath);
             _items.Add(newItem);
 
             _logger.LogInformation($"Added item: {newItem.ItemName} (ID: {newItem.ItemID})");
