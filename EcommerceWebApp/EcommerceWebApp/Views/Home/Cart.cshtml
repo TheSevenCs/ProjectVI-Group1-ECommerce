@@ -5,10 +5,13 @@
 }
 
 <section class="cart-container">
-    @if (ViewBag.CartItems != null && ((List<Item>)ViewBag.CartItems).Count > 0)
+    @{
+        var cartItems = ViewBag.CartItems as List<Item> ?? new List<Item>(); // Ensure it's a list
+    }
+
+    @if (cartItems.Any()) // Check if cart is not empty
     {
-        var items = (List<Item>)ViewBag.CartItems;
-        foreach (var cartItem in items)
+        foreach (var cartItem in cartItems)
         {
             <div class="cart-item large-item">
                 <div class="left-section">
@@ -33,7 +36,7 @@
 
                     <span class="item-price">
                         <span class="money-symbol">$</span>
-                        <span class="money-amount">@cartItem.ItemPrice</span>
+                        <span class="money-amount">@cartItem.ItemPrice.ToString("F2")</span>
                     </span>
 
                     <form method="post" action="@Url.Action("RemoveItem", "Home")" style="display:inline;">
@@ -45,11 +48,11 @@
         }
 
         <div class="cart-summary">
-            <p>Total items: @items.Sum(x => x.Quantity)</p>
+            <p>Total items: @cartItems.Sum(x => x.Quantity)</p>
             <p>
                 Total cost:
                 <span class="money-symbol">$</span>
-                @items.Sum(x => x.ItemPrice * x.Quantity).ToString("F2")
+                @cartItems.Sum(x => x.ItemPrice * x.Quantity).ToString("F2")
             </p>
 
             <form method="post" action="@Url.Action("Checkout", "Home")">
