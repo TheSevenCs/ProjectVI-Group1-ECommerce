@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+﻿    using Microsoft.Extensions.Logging;
 using EcommerceWebApp.Models;
 using EcommerceWebApp.Handlers;
 
@@ -33,11 +33,12 @@ namespace EcommerceWebApp.Controllers
             }
         }
 
-        public void ClearUserCart(int userId)
+        public void ClearUserCart(int userId, User user)
         {
             try
             {
-                _dbHandler.DeleteCart(userId);
+                user.ClearCart(); // Clear via User class
+                _dbHandler.DeleteCart(userId); // Ensure DB reflects the change
                 _logger.LogInformation($"Shopping cart cleared for user: {userId}");
             }
             catch (Exception ex)

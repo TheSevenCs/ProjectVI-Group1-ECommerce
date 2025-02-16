@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
-using EcommerceWebApp.Models; 
+using EcommerceWebApp.Models;
+using EcommerceWebApp.Handlers;
+using MySql.Data.MySqlClient;
 
 namespace EcommerceWebApp.Controllers
 {
@@ -11,28 +13,27 @@ namespace EcommerceWebApp.Controllers
     public class ItemController : ControllerBase
     {
         private readonly ILogger<ItemController> _logger;
-        private static List<Item> _items = new List<Item>();
+        private readonly DBHandler _dbHandler;
 
-        public ItemController(ILogger<ItemController> logger)
+        public ItemController(ILogger<ItemController> logger, DBHandler dbHandler)
         {
             _logger = logger;
+            _dbHandler = dbHandler;
         }
 
         [HttpPost("add")]
         public ActionResult<Item> AddItem(string name, float price, int quantity)
         {
-            int newId = _items.Count + 1;
-            var newItem = new Item(newId, name, quantity, price);
-            _items.Add(newItem);
-
-            _logger.LogInformation($"Added item: {newItem.ItemName} (ID: {newItem.ItemID})");
+            var newItem = new Item { ItemName = name, ItemPrice = price, Quantity = quantity };
+            _dbHandler.AddItem(name, price, quantity);
+            _logger.LogInformation($"Added item: {name}");
             return CreatedAtAction(nameof(GetItem), new { itemID = newItem.ItemID }, newItem);
         }
 
         [HttpGet("{itemID}")]
         public ActionResult<Item> GetItem(int itemID)
         {
-            var item = _items.FirstOrDefault(i => i.ItemID == itemID);
+            var item = _dbHandler.GetItemByID(itemID);
             if (item == null)
             {
                 _logger.LogWarning($"Item with ID {itemID} not found.");
@@ -44,16 +45,31 @@ namespace EcommerceWebApp.Controllers
         [HttpGet]
         public ActionResult<List<Item>> GetAllItems()
         {
-            return _items;
+            var items = _dbHandler.GetAllItems();
+            return items;
         }
+
+
+        [HttpGet("category/{category}")]
+        public ActionResult<List<Item>> GetItemsByCategory(string category)
+        {
+            var items = _dbHandler.GetItemsByCategory(category);
+            if (items == null || items.Count == 0)
+            {
+                _logger.LogWarning($"No items found for category: {category}");
+                return NotFound($"No items found for category: {category}");
+            }
+            return items;
+        }
+
 
         [HttpDelete("{itemID}")]
         public IActionResult DeleteItem(int itemID)
         {
-            var item = _items.FirstOrDefault(i => i.ItemID == itemID);
+            var item = _dbHandler.GetItemByID(itemID);
             if (item != null)
             {
-                _items.Remove(item);
+                _dbHandler.DeleteItem(itemID);
                 _logger.LogInformation($"Removed item with ID {itemID}");
                 return NoContent();
             }

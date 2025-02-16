@@ -7,25 +7,56 @@
 
 <section class="category-panel">
     <form method="get" action="@Url.Action("Index", "Home")">
+        @{
+            var selectedCategories = Context.Request.Query["categories"].ToList();
+        }
         <div class="checkbox-row">
-            <label><input type="checkbox" name="categories" value="Beverages"> Beverages</label>
-            <label><input type="checkbox" name="categories" value="Deli"> Deli</label>
-            <label><input type="checkbox" name="categories" value="Meat"> Meat</label>
+            <label>
+                <input type="checkbox" name="categories" value="Beverages" @(selectedCategories.Contains("Beverages") ? "checked" : "")>
+                Beverages
+            </label>
+            <label>
+                <input type="checkbox" name="categories" value="Deli" @(selectedCategories.Contains("Deli") ? "checked" : "")>
+                Deli
+            </label>
+            <label>
+                <input type="checkbox" name="categories" value="Meat" @(selectedCategories.Contains("Meat") ? "checked" : "")>
+                Meat
+            </label>
         </div>
         <div class="checkbox-row">
-            <label><input type="checkbox" name="categories" value="Bread"> Bread</label>
-            <label><input type="checkbox" name="categories" value="Fruits"> Fruits</label>
-            <label><input type="checkbox" name="categories" value="Pharmacy"> Pharmacy</label>
+            <label>
+                <input type="checkbox" name="categories" value="Bread" @(selectedCategories.Contains("Bread") ? "checked" : "")>
+                Bread
+            </label>
+            <label>
+                <input type="checkbox" name="categories" value="Fruits" @(selectedCategories.Contains("Fruits") ? "checked" : "")>
+                Fruits
+            </label>
+            <label>
+                <input type="checkbox" name="categories" value="Pharmacy" @(selectedCategories.Contains("Pharmacy") ? "checked" : "")>
+                Pharmacy
+            </label>
         </div>
         <div class="checkbox-row">
-            <label><input type="checkbox" name="categories" value="Dairy"> Dairy</label>
-            <label><input type="checkbox" name="categories" value="Health"> Health</label>
-            <label><input type="checkbox" name="categories" value="Snack"> Snack</label>
+            <label>
+                <input type="checkbox" name="categories" value="Dairy" @(selectedCategories.Contains("Dairy") ? "checked" : "")>
+                Dairy
+            </label>
+            <label>
+                <input type="checkbox" name="categories" value="Health" @(selectedCategories.Contains("Health") ? "checked" : "")>
+                Health
+            </label>
+            <label>
+                <input type="checkbox" name="categories" value="Snack" @(selectedCategories.Contains("Snack") ? "checked" : "")>
+                Snack
+            </label>
         </div>
 
         <button type="submit" class="filter-button">Filter</button>
     </form>
 </section>
+
 
 <section class="product-container">
     <div class="product-grid">
@@ -42,7 +73,6 @@
                     </p>
                     <p class="description">@item.ItemName</p>
 
-                    <!-- Call AddToCartAjax from HomeController -->
                     <button class="add-button" onclick="addToCartAjax(@item.ItemID)">+</button>
                 </div>
             </article>
