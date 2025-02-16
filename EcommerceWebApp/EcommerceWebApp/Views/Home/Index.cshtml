@@ -57,7 +57,6 @@
     </form>
 </section>
 
-
 <section class="product-container">
     <div class="product-grid">
         @foreach (var item in Model)
@@ -72,7 +71,6 @@
                         <span class="amount">@item.ItemPrice</span>
                     </p>
                     <p class="description">@item.ItemName</p>
-
                     <button class="add-button" onclick="addToCartAjax(@item.ItemID)">+</button>
                 </div>
             </article>

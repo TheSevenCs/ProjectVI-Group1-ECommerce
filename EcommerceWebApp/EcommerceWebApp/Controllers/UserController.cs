@@ -1,4 +1,4 @@
-﻿    using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using EcommerceWebApp.Models;
 using EcommerceWebApp.Handlers;
 
