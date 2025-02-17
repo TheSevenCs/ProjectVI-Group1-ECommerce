@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace EcommerceWebApp.Models
 {
-    internal class ShoppingCart
+        public class ShoppingCart
     {
         public int UserID { get; private set; }
         internal List<Item> items = new List<Item>();

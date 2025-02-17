@@ -101,6 +101,88 @@ namespace EcommerceWebApp.Handlers
             }
             return items;
         }
+        //Getting User ID
+        public User GetUserById(int userId)
+        {
+            using (var conn = new MySqlConnection(_connectionString))
+            {
+                conn.Open();
+                var query = "SELECT * FROM Users WHERE user_id = @UserId";
+
+                using (var cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.Add(new MySqlParameter("@UserId", userId));
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            var user = new User((int)reader["user_id"]);
+                            return user;
+                        }
+                        return null;
+                    }
+                }
+            }
+        }
+        //To Update User
+        public void UpdateUser(int userId, User updatedUser)
+        {
+            using (var conn = new MySqlConnection(_connectionString))
+            {
+                conn.Open();
+                var query = "UPDATE Users SET name = @Name, email = @Email WHERE user_id = @UserId";
+
+                using (var cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.Add(new MySqlParameter("@UserId", userId));
+                    cmd.Parameters.Add(new MySqlParameter("@Name", updatedUser.Name)); // Assuming the User class has a Name property
+                    cmd.Parameters.Add(new MySqlParameter("@Email", updatedUser.Email)); // Assuming the User class has an Email property
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        //For patching users
+        public void PatchUser(int userId, User updatedUser)
+        {
+            using (var conn = new MySqlConnection(_connectionString))
+            {
+                conn.Open();
+                var query = "UPDATE Users SET ";
+
+                var setClause = new List<string>();
+                var parameters = new List<MySqlParameter>();
+
+                if (!string.IsNullOrEmpty(updatedUser.Name))
+                {
+                    setClause.Add("name = @Name");
+                    parameters.Add(new MySqlParameter("@Name", updatedUser.Name));
+                }
+
+                if (!string.IsNullOrEmpty(updatedUser.Email))
+                {
+                    setClause.Add("email = @Email");
+                    parameters.Add(new MySqlParameter("@Email", updatedUser.Email));
+                }
+
+                if (setClause.Count == 0)
+                {
+                    throw new ArgumentException("No fields to update.");
+                }
+
+                query += string.Join(", ", setClause);
+                query += " WHERE user_id = @UserId";
+                parameters.Add(new MySqlParameter("@UserId", userId));
+
+                using (var cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddRange(parameters.ToArray());
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
 
         // Save Shopping Cart
         internal void SaveCart(ShoppingCart cart)
@@ -111,7 +193,6 @@ namespace EcommerceWebApp.Handlers
 
                 string newCartId = Guid.NewGuid().ToString();
 
-                // Ensure cart exists
                 string cartExistQuery = "SELECT cart_id FROM CART WHERE user_id = @UserID";
                 using (var cartCheckCmd = new MySqlCommand(cartExistQuery, conn))
                 {
@@ -134,7 +215,6 @@ namespace EcommerceWebApp.Handlers
                     }
                 }
 
-                // Remove old cart items
                 string deleteQuery = "DELETE FROM ITEM_CART WHERE cart_id = @CartID";
                 using (var deleteCmd = new MySqlCommand(deleteQuery, conn))
                 {
@@ -142,7 +222,7 @@ namespace EcommerceWebApp.Handlers
                     deleteCmd.ExecuteNonQuery();
                 }
 
-                // Insert items into ITEM_CART
+               
                 foreach (var item in cart.items)
                 {
                     string insertQuery = "INSERT INTO ITEM_CART (cart_id, item_id, quantity) VALUES (@CartID, @ItemID, @Quantity)";
@@ -209,10 +289,10 @@ namespace EcommerceWebApp.Handlers
         }
 
         // Update Shopping Cart
-        internal void UpdateCart(int cartID, ShoppingCart cart)
+        internal void UpdateCart(int cartID, ShoppingCart updatedcart)
         {
             DeleteCart(cartID);
-            SaveCart(cart);
+            SaveCart(updatedcart);
         }
 
         // Patch Cart
@@ -269,6 +349,70 @@ namespace EcommerceWebApp.Handlers
                 }
             }
         }
+
+        // Patch Item 
+        public void PatchItem(int itemID, Item updatedItem)
+        {
+            using (var conn = new MySqlConnection(_connectionString))
+            {
+                conn.Open();
+
+                string query = "UPDATE ITEM SET ";
+                List<MySqlParameter> parameters = new List<MySqlParameter>();
+
+                if (!string.IsNullOrEmpty(updatedItem.ItemName))
+                {
+                    query += "item_name = @ItemName, ";
+                    parameters.Add(new MySqlParameter("@ItemName", updatedItem.ItemName));
+                }
+
+                if (updatedItem.ItemPrice != 0)
+                {
+                    query += "item_price = @ItemPrice, ";
+                    parameters.Add(new MySqlParameter("@ItemPrice", updatedItem.ItemPrice));
+                }
+
+                if (updatedItem.Quantity != 0)
+                {
+                    query += "item_quantity = @ItemQuantity, ";
+                    parameters.Add(new MySqlParameter("@ItemQuantity", updatedItem.Quantity));
+                }
+
+                query = query.TrimEnd(',', ' ');
+
+                query += " WHERE item_id = @ItemID";
+                parameters.Add(new MySqlParameter("@ItemID", itemID));
+
+                using (var cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddRange(parameters.ToArray());
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+
+        // Update Item 
+        public void UpdateItem(int itemID, Item updatedItem)
+        {
+            using (var conn = new MySqlConnection(_connectionString))
+            {
+                conn.Open();
+
+                string query = "UPDATE ITEM SET item_name = @ItemName, item_price = @ItemPrice, item_quantity = @ItemQuantity WHERE item_id = @ItemID";
+
+                using (var cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@ItemID", itemID);
+                    cmd.Parameters.AddWithValue("@ItemName", updatedItem.ItemName);
+                    cmd.Parameters.AddWithValue("@ItemPrice", updatedItem.ItemPrice);
+                    cmd.Parameters.AddWithValue("@ItemQuantity", updatedItem.Quantity);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
 
         // Delete Cart
         public void DeleteCart(int userID)

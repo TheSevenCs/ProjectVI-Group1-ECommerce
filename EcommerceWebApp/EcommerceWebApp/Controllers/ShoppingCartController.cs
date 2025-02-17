@@ -81,6 +81,43 @@ namespace EcommerceWebApp.Controllers
             return Ok(_shoppingCart.items);
         }
 
+        [HttpPut("update")]
+        public IActionResult UpdateCart([FromBody] ShoppingCart updatedCart)
+        {
+            try
+            {
+                _shoppingCart.items = updatedCart.items;
+                _dbHandler.SaveCart(_shoppingCart);
+                return Ok(updatedCart);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Failed to update cart: {ex.Message}");
+            }
+        }
+
+        [HttpPatch("modify")]
+        public IActionResult ModifyCart([FromBody] Item updatedItem)
+        {
+            try
+            {
+                _shoppingCart.AddItem(updatedItem, updatedItem.Quantity);
+                _dbHandler.SaveCart(_shoppingCart);
+                return Ok("Item modified in cart.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Failed to modify cart: {ex.Message}");
+            }
+        }
+
+        [HttpOptions]
+        public IActionResult OptionsCart()
+        {
+            Response.Headers.Add("Allow", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+            return Ok();
+        }
+
         [HttpPost("checkout")]
         public IActionResult CheckoutCart()
         {

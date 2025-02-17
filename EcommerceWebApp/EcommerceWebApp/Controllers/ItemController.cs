@@ -62,6 +62,31 @@ namespace EcommerceWebApp.Controllers
             return items;
         }
 
+        [HttpPut("{itemID}")]
+        public IActionResult UpdateItem(int itemID, [FromBody] Item updatedItem)
+        {
+            var existingItem = _dbHandler.GetItemByID(itemID);
+            if (existingItem == null)
+            {
+                return NotFound();
+            }
+
+            _dbHandler.UpdateItem(itemID, updatedItem);
+            return Ok(updatedItem);
+        }
+
+        [HttpPatch("{itemID}")]
+        public IActionResult PatchItem(int itemID, [FromBody] Item updatedItem)
+        {
+            var existingItem = _dbHandler.GetItemByID(itemID);
+            if (existingItem == null)
+            {
+                return NotFound();
+            }
+
+            _dbHandler.PatchItem(itemID, updatedItem);
+            return Ok(updatedItem);
+        }
 
         [HttpDelete("{itemID}")]
         public IActionResult DeleteItem(int itemID)
@@ -75,6 +100,13 @@ namespace EcommerceWebApp.Controllers
             }
             _logger.LogWarning($"Delete failed. Item with ID {itemID} not found.");
             return NotFound();
+        }
+
+        [HttpOptions]
+        public IActionResult OptionsItem()
+        {
+            Response.Headers.Add("Allow", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+            return Ok();
         }
     }
 }
