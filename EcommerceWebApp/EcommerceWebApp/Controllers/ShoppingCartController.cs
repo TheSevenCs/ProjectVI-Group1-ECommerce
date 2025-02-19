@@ -12,39 +12,26 @@ namespace EcommerceWebApp.Controllers
         private readonly int _userID;
         private readonly DBHandler _dbHandler;
 
-        public ShoppingCartController(int userID, DBHandler dbHandler)
+        public ShoppingCartController(DBHandler dbHandler)
         {
-            _userID = userID;
             _dbHandler = dbHandler;
-
-            var existingCart = dbHandler.LoadCart(userID);
-            if (existingCart.items.Count == 0)
-            {
-                _shoppingCart = new ShoppingCart(userID);
-                _dbHandler.SaveCart(_shoppingCart);
-            }
-            else
-            {
-                _shoppingCart = existingCart;
-            }
+            _userID = GetUserIdFromContext(); // Retrieve userID dynamically
+            _shoppingCart = LoadOrCreateCart();
         }
 
-        public ShoppingCartController(int userID, List<Item> items, DBHandler dbHandler)
+        private int GetUserIdFromContext()
         {
-            _userID = userID;
-            _dbHandler = dbHandler;
-
-            if (items.Count == 0)
-            {
-                    _shoppingCart = new ShoppingCart(userID);
-                _dbHandler.SaveCart(_shoppingCart);
-            }
-            else
-            {
-                _shoppingCart = new ShoppingCart(userID, items);
-            }
+            var userID = HttpContext?.Request.Cookies["userID"];
+            return userID != null ? Math.Abs(userID.GetHashCode()) : 0;
         }
-            
+
+        private ShoppingCart LoadOrCreateCart()
+        {
+            var existingCart = _dbHandler.LoadCart(_userID);
+            return existingCart?.items.Count > 0 ? existingCart : new ShoppingCart(_userID);
+        }
+
+
         [HttpPost("add")]
         public IActionResult AddItemToCart(Item item)
         {
@@ -79,6 +66,43 @@ namespace EcommerceWebApp.Controllers
         public IActionResult ViewCart()
         {
             return Ok(_shoppingCart.items);
+        }
+
+        [HttpPut("update")]
+        public IActionResult UpdateCart([FromBody] ShoppingCart updatedCart)
+        {
+            try
+            {
+                _shoppingCart.items = updatedCart.items;
+                _dbHandler.SaveCart(_shoppingCart);
+                return Ok(updatedCart);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Failed to update cart: {ex.Message}");
+            }
+        }
+
+        [HttpPatch("modify")]
+        public IActionResult ModifyCart([FromBody] Item updatedItem)
+        {
+            try
+            {
+                _shoppingCart.AddItem(updatedItem, updatedItem.Quantity);
+                _dbHandler.SaveCart(_shoppingCart);
+                return Ok("Item modified in cart.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Failed to modify cart: {ex.Message}");
+            }
+        }
+
+        [HttpOptions]
+        public IActionResult OptionsCart()
+        {
+            Response.Headers.Add("Allow", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+            return Ok();
         }
 
         [HttpPost("checkout")]
