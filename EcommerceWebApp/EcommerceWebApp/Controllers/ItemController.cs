@@ -22,13 +22,27 @@ namespace EcommerceWebApp.Controllers
         }
 
         [HttpPost("add")]
-        public ActionResult<Item> AddItem(string name, float price, int quantity)
+        public ActionResult<Item> AddItem(string name, float price, int quantity, string? imagePath = null)
         {
-            var newItem = new Item { ItemName = name, ItemPrice = price, Quantity = quantity };
-            _dbHandler.AddItem(name, price, quantity);
-            _logger.LogInformation($"Added item: {name}");
+            if (string.IsNullOrWhiteSpace(imagePath))
+            {
+                imagePath = "images/Placeholder.png";
+            }
+
+            var newItem = new Item
+            {
+                ItemName = name,
+                ItemPrice = price,
+                Quantity = quantity,
+                ImagePath = imagePath
+            };
+
+            _dbHandler.AddItem(name, price, quantity, imagePath);
+            _logger.LogInformation($"Added item: {name}, Image: {imagePath}");
+
             return CreatedAtAction(nameof(GetItem), new { itemID = newItem.ItemID }, newItem);
         }
+
 
         [HttpGet("{itemID}")]
         public ActionResult<Item> GetItem(int itemID)

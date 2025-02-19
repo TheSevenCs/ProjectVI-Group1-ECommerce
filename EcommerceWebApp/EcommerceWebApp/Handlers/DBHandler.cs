@@ -20,7 +20,7 @@ namespace EcommerceWebApp.Handlers
             using (var conn = new MySqlConnection(_connectionString))
             {
                 conn.Open();
-                string query = "SELECT item_id, item_name, item_price, item_quantity FROM ITEM WHERE item_id = @ItemID";
+                string query = "SELECT item_id, item_name, item_price, item_quantity, item_image_path FROM ITEM WHERE item_id = @ItemID";
 
                 using (var cmd = new MySqlCommand(query, conn))
                 {
@@ -34,7 +34,8 @@ namespace EcommerceWebApp.Handlers
                                 ItemID = reader.GetInt32("item_id"),
                                 ItemName = reader.GetString("item_name"),
                                 ItemPrice = reader.GetFloat("item_price"),
-                                Quantity = reader.GetInt32("item_quantity")
+                                Quantity = reader.GetInt32("item_quantity"),
+                                ImagePath = reader.GetString("item_image_path")
                             };
                         }
                     }
@@ -50,7 +51,7 @@ namespace EcommerceWebApp.Handlers
             using (var conn = new MySqlConnection(_connectionString))
             {
                 conn.Open();
-                string query = "SELECT item_id, item_name, item_price, item_quantity FROM ITEM";
+                string query = "SELECT item_id, item_name, item_price, item_quantity, item_image_path FROM ITEM";
 
                 using (var cmd = new MySqlCommand(query, conn))
                 {
@@ -63,7 +64,8 @@ namespace EcommerceWebApp.Handlers
                                 ItemID = reader.GetInt32("item_id"),
                                 ItemName = reader.GetString("item_name"),
                                 ItemPrice = reader.GetFloat("item_price"),
-                                Quantity = reader.GetInt32("item_quantity")
+                                Quantity = reader.GetInt32("item_quantity"),
+                                ImagePath = reader.GetString("item_image_path")
                             });
                         }
                     }
@@ -79,7 +81,7 @@ namespace EcommerceWebApp.Handlers
             using (var conn = new MySqlConnection(_connectionString))
             {
                 conn.Open();
-                string query = "SELECT item_id, item_name, item_price, item_quantity FROM ITEM WHERE item_category = @Category";
+                string query = "SELECT item_id, item_name, item_price, item_quantity, item_image_path FROM ITEM WHERE item_category = @Category";
 
                 using (var cmd = new MySqlCommand(query, conn))
                 {
@@ -93,7 +95,8 @@ namespace EcommerceWebApp.Handlers
                                 ItemID = reader.GetInt32("item_id"),
                                 ItemName = reader.GetString("item_name"),
                                 ItemPrice = reader.GetFloat("item_price"),
-                                Quantity = reader.GetInt32("item_quantity")
+                                Quantity = reader.GetInt32("item_quantity"),
+                                ImagePath = reader.GetString("item_image_path")
                             });
                         }
                     }
@@ -261,7 +264,7 @@ namespace EcommerceWebApp.Handlers
                 }
 
                 string query = @"
-                    SELECT ic.item_id, i.item_name, i.item_price, ic.quantity 
+                    SELECT ic.item_id, i.item_name, i.item_price, ic.quantity, i.item_image_path 
                     FROM ITEM_CART ic 
                     JOIN ITEM i ON ic.item_id = i.item_id 
                     WHERE ic.cart_id = @CartID";
@@ -278,11 +281,13 @@ namespace EcommerceWebApp.Handlers
                                 ItemID = reader.GetInt32("item_id"),
                                 ItemName = reader.GetString("item_name"),
                                 ItemPrice = reader.GetFloat("item_price"),
-                                Quantity = reader.GetInt32("quantity")
+                                Quantity = reader.GetInt32("quantity"),
+                                ImagePath = reader.GetString("item_image_path")
                             });
                         }
                     }
                 }
+
             }
 
             return new ShoppingCart(userID, items);
@@ -317,18 +322,19 @@ namespace EcommerceWebApp.Handlers
         }
 
         // Add Item to Cart
-        public void AddItem(string itemName, float price, int quantity)
+        public void AddItem(string itemName, float price, int quantity, string imagePath)
         {
             using (var conn = new MySqlConnection(_connectionString))
             {
                 conn.Open();
-                string query = "INSERT INTO ITEM (item_name, item_price, item_quantity) VALUES (@ItemName, @Price, @Quantity)";
+                string query = "INSERT INTO ITEM (item_name, item_price, item_quantity, item_image_path) VALUES (@ItemName, @Price, @Quantity, @ImagePath)";
 
                 using (var cmd = new MySqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@ItemName", itemName);
                     cmd.Parameters.AddWithValue("@Price", price);
                     cmd.Parameters.AddWithValue("@Quantity", quantity);
+                    cmd.Parameters.AddWithValue("@ImagePath", imagePath);
                     cmd.ExecuteNonQuery();
                 }
             }
