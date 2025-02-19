@@ -68,11 +68,12 @@
 
                 </div>
                 <div class="product-info">
+                    <p class="item-name">@item.ItemName</p>
+                    <p class="item-description">@item.Description</p>
                     <p class="price">
                         <span class="dollar-symbol">$</span>
                         <span class="amount">@item.ItemPrice</span>
                     </p>
-                    <p class="description">@item.ItemName</p>
                     <button class="add-button" onclick="addToCartAjax(@item.ItemID)">+</button>
                 </div>
             </article>
