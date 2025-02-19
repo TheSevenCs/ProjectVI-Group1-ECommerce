@@ -11,23 +11,23 @@ namespace EcommerceWebApp.Controllers
 {
     public class HomeController : Controller
     {
-        private ShoppingCartController _shoppingCartController;
-        private ItemController _itemController;
+        private readonly ShoppingCartController _shoppingCartController;
+        private readonly ItemController _itemController;
         private int _userID;
 
-        public HomeController(DBHandler dbHandler)
+        public HomeController(DBHandler dbHandler, ShoppingCartController shoppingCartController, ItemController itemController)
         {
-            _itemController = new ItemController(new LoggerFactory().CreateLogger<ItemController>(), dbHandler);
+            _shoppingCartController = shoppingCartController;
+            _itemController = itemController;
         }
+
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             base.OnActionExecuting(context);
 
-            // Check for userID in cookies
             if (!Request.Cookies.ContainsKey("userID"))
             {
-                // Generate a new userID if it doesn't exist
                 var newUserID = Guid.NewGuid().ToString();
                 Response.Cookies.Append("userID", newUserID, new CookieOptions
                 {
@@ -39,15 +39,9 @@ namespace EcommerceWebApp.Controllers
             }
             else
             {
-                // Retrieve the existing userID
                 var userID = Request.Cookies["userID"];
                 _userID = Math.Abs(userID.GetHashCode());
             }
-
-            var dbHandler = HttpContext.RequestServices.GetService(typeof(DBHandler)) as DBHandler;
-            var existingCart = dbHandler?.LoadCart(_userID);
-            var items = existingCart?.items ?? new List<Item>();
-            _shoppingCartController = new ShoppingCartController(_userID, items, dbHandler);
         }
         public IActionResult Index(string[] categories)
         {

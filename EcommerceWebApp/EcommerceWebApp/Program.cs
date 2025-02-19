@@ -1,3 +1,4 @@
+using EcommerceWebApp.Controllers;
 using EcommerceWebApp.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +8,10 @@ builder.Services.AddControllersWithViews();
 
 // Add DBHandler to Dependency Injection
 builder.Services.AddSingleton<DBHandler>();
+
+builder.Services.AddScoped<ShoppingCartController>();
+builder.Services.AddScoped<ItemController>();
+
 
 var app = builder.Build();
 
