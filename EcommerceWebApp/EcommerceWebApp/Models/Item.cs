@@ -6,6 +6,8 @@ namespace EcommerceWebApp.Models
         public string ItemName { get; set; }
         public int Quantity { get; set; }
         public float ItemPrice { get; set; }
+        public string ImagePath { get; set; }
+
 
         public Item() { }
 
