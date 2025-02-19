@@ -17,7 +17,8 @@
                 <div class="left-section">
                     <input type="checkbox" class="item-checkbox" />
                     <div class="item-image">
-                        <span>Image</span>
+                        <img src="@Url.Content("~/images/" + System.IO.Path.GetFileName(cartItem.ImagePath))"
+                             alt="@cartItem.ItemName" width="80" height="80">
                     </div>
                     <p class="item-description">@cartItem.ItemName</p>
                 </div>

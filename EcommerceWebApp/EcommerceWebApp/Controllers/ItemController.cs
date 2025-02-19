@@ -22,7 +22,7 @@ namespace EcommerceWebApp.Controllers
         }
 
         [HttpPost("add")]
-        public ActionResult<Item> AddItem(string name, float price, int quantity, string? imagePath = null)
+        public ActionResult<Item> AddItem(string name, float price, int quantity, string description, string? imagePath = null)
         {
             if (string.IsNullOrWhiteSpace(imagePath))
             {
@@ -34,10 +34,11 @@ namespace EcommerceWebApp.Controllers
                 ItemName = name,
                 ItemPrice = price,
                 Quantity = quantity,
-                ImagePath = imagePath
+                ImagePath = imagePath,
+                Description = description
             };
 
-            _dbHandler.AddItem(name, price, quantity, imagePath);
+            _dbHandler.AddItem(name, price, quantity, imagePath, description);
             _logger.LogInformation($"Added item: {name}, Image: {imagePath}");
 
             return CreatedAtAction(nameof(GetItem), new { itemID = newItem.ItemID }, newItem);

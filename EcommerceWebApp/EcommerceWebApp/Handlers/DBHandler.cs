@@ -2,6 +2,9 @@
 using EcommerceWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace EcommerceWebApp.Handlers
 {
@@ -14,13 +17,12 @@ namespace EcommerceWebApp.Handlers
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
-        // Get Item by ID
         public Item? GetItemByID(int itemID)
         {
             using (var conn = new MySqlConnection(_connectionString))
             {
                 conn.Open();
-                string query = "SELECT item_id, item_name, item_price, item_quantity, item_image_path FROM ITEM WHERE item_id = @ItemID";
+                string query = "SELECT item_id, item_name, item_price, item_quantity, item_image_path, item_description FROM ITEM WHERE item_id = @ItemID";
 
                 using (var cmd = new MySqlCommand(query, conn))
                 {
@@ -35,7 +37,8 @@ namespace EcommerceWebApp.Handlers
                                 ItemName = reader.GetString("item_name"),
                                 ItemPrice = reader.GetFloat("item_price"),
                                 Quantity = reader.GetInt32("item_quantity"),
-                                ImagePath = reader.GetString("item_image_path")
+                                ImagePath = reader.GetString("item_image_path"),
+                                Description = reader.GetString("item_description")
                             };
                         }
                     }
@@ -51,7 +54,7 @@ namespace EcommerceWebApp.Handlers
             using (var conn = new MySqlConnection(_connectionString))
             {
                 conn.Open();
-                string query = "SELECT item_id, item_name, item_price, item_quantity, item_image_path FROM ITEM";
+                string query = "SELECT item_id, item_name, item_price, item_quantity, item_image_path, item_description FROM ITEM";
 
                 using (var cmd = new MySqlCommand(query, conn))
                 {
@@ -65,7 +68,8 @@ namespace EcommerceWebApp.Handlers
                                 ItemName = reader.GetString("item_name"),
                                 ItemPrice = reader.GetFloat("item_price"),
                                 Quantity = reader.GetInt32("item_quantity"),
-                                ImagePath = reader.GetString("item_image_path")
+                                ImagePath = reader.GetString("item_image_path"),
+                                Description = reader.GetString("item_description")
                             });
                         }
                     }
@@ -74,14 +78,13 @@ namespace EcommerceWebApp.Handlers
             return items;
         }
 
-        // Get Items by Category
         public List<Item> GetItemsByCategory(string itemCategory)
         {
             var items = new List<Item>();
             using (var conn = new MySqlConnection(_connectionString))
             {
                 conn.Open();
-                string query = "SELECT item_id, item_name, item_price, item_quantity, item_image_path FROM ITEM WHERE item_category = @Category";
+                string query = "SELECT item_id, item_name, item_price, item_quantity, item_image_path, item_description FROM ITEM WHERE item_category = @Category";
 
                 using (var cmd = new MySqlCommand(query, conn))
                 {
@@ -96,7 +99,8 @@ namespace EcommerceWebApp.Handlers
                                 ItemName = reader.GetString("item_name"),
                                 ItemPrice = reader.GetFloat("item_price"),
                                 Quantity = reader.GetInt32("item_quantity"),
-                                ImagePath = reader.GetString("item_image_path")
+                                ImagePath = reader.GetString("item_image_path"),
+                                Description = reader.GetString("item_description")
                             });
                         }
                     }
@@ -104,7 +108,7 @@ namespace EcommerceWebApp.Handlers
             }
             return items;
         }
-        //Getting User ID
+
         public User GetUserById(int userId)
         {
             using (var conn = new MySqlConnection(_connectionString))
@@ -127,7 +131,7 @@ namespace EcommerceWebApp.Handlers
                 }
             }
         }
-        //To Update User
+
         public void UpdateUser(int userId, User updatedUser)
         {
             using (var conn = new MySqlConnection(_connectionString))
@@ -138,15 +142,14 @@ namespace EcommerceWebApp.Handlers
                 using (var cmd = new MySqlCommand(query, conn))
                 {
                     cmd.Parameters.Add(new MySqlParameter("@UserId", userId));
-                    cmd.Parameters.Add(new MySqlParameter("@Name", updatedUser.Name)); // Assuming the User class has a Name property
-                    cmd.Parameters.Add(new MySqlParameter("@Email", updatedUser.Email)); // Assuming the User class has an Email property
+                    cmd.Parameters.Add(new MySqlParameter("@Name", updatedUser.Name));
+                    cmd.Parameters.Add(new MySqlParameter("@Email", updatedUser.Email));
 
                     cmd.ExecuteNonQuery();
                 }
             }
         }
 
-        //For patching users
         public void PatchUser(int userId, User updatedUser)
         {
             using (var conn = new MySqlConnection(_connectionString))
@@ -186,8 +189,6 @@ namespace EcommerceWebApp.Handlers
             }
         }
 
-
-        // Save Shopping Cart
         internal void SaveCart(ShoppingCart cart)
         {
             using (var conn = new MySqlConnection(_connectionString))
@@ -225,7 +226,6 @@ namespace EcommerceWebApp.Handlers
                     deleteCmd.ExecuteNonQuery();
                 }
 
-               
                 foreach (var item in cart.items)
                 {
                     string insertQuery = "INSERT INTO ITEM_CART (cart_id, item_id, quantity) VALUES (@CartID, @ItemID, @Quantity)";
@@ -240,7 +240,6 @@ namespace EcommerceWebApp.Handlers
             }
         }
 
-        // Load Shopping Cart
         internal ShoppingCart LoadCart(int userID)
         {
             var items = new List<Item>();
@@ -264,7 +263,7 @@ namespace EcommerceWebApp.Handlers
                 }
 
                 string query = @"
-                    SELECT ic.item_id, i.item_name, i.item_price, ic.quantity, i.item_image_path 
+                    SELECT ic.item_id, i.item_name, i.item_price, ic.quantity, i.item_image_path, i.item_description 
                     FROM ITEM_CART ic 
                     JOIN ITEM i ON ic.item_id = i.item_id 
                     WHERE ic.cart_id = @CartID";
@@ -282,25 +281,24 @@ namespace EcommerceWebApp.Handlers
                                 ItemName = reader.GetString("item_name"),
                                 ItemPrice = reader.GetFloat("item_price"),
                                 Quantity = reader.GetInt32("quantity"),
-                                ImagePath = reader.GetString("item_image_path")
+                                ImagePath = reader.GetString("item_image_path"),
+                                Description = reader.GetString("item_description")
                             });
                         }
                     }
                 }
-
             }
 
             return new ShoppingCart(userID, items);
         }
 
-        // Update Shopping Cart
         internal void UpdateCart(int cartID, ShoppingCart updatedcart)
         {
             DeleteCart(cartID);
             SaveCart(updatedcart);
         }
 
-        // Patch Cart
+
         internal void PatchCart(int cartID, ShoppingCart changes)
         {
             using (var conn = new MySqlConnection(_connectionString))
@@ -321,13 +319,12 @@ namespace EcommerceWebApp.Handlers
             }
         }
 
-        // Add Item to Cart
-        public void AddItem(string itemName, float price, int quantity, string imagePath)
+        public void AddItem(string itemName, float price, int quantity, string imagePath, string description)
         {
             using (var conn = new MySqlConnection(_connectionString))
             {
                 conn.Open();
-                string query = "INSERT INTO ITEM (item_name, item_price, item_quantity, item_image_path) VALUES (@ItemName, @Price, @Quantity, @ImagePath)";
+                string query = "INSERT INTO ITEM (item_name, item_price, item_quantity, item_image_path, item_description) VALUES (@ItemName, @Price, @Quantity, @ImagePath, @Description)";
 
                 using (var cmd = new MySqlCommand(query, conn))
                 {
@@ -335,12 +332,12 @@ namespace EcommerceWebApp.Handlers
                     cmd.Parameters.AddWithValue("@Price", price);
                     cmd.Parameters.AddWithValue("@Quantity", quantity);
                     cmd.Parameters.AddWithValue("@ImagePath", imagePath);
+                    cmd.Parameters.AddWithValue("@Description", description);
                     cmd.ExecuteNonQuery();
                 }
             }
         }
 
-        // Delete Item
         public void DeleteItem(int itemID)
         {
             using (var conn = new MySqlConnection(_connectionString))
@@ -356,7 +353,6 @@ namespace EcommerceWebApp.Handlers
             }
         }
 
-        // Patch Item 
         public void PatchItem(int itemID, Item updatedItem)
         {
             using (var conn = new MySqlConnection(_connectionString))
@@ -384,8 +380,13 @@ namespace EcommerceWebApp.Handlers
                     parameters.Add(new MySqlParameter("@ItemQuantity", updatedItem.Quantity));
                 }
 
-                query = query.TrimEnd(',', ' ');
+                if (!string.IsNullOrEmpty(updatedItem.Description))
+                {
+                    query += "item_description = @Description, ";
+                    parameters.Add(new MySqlParameter("@Description", updatedItem.Description));
+                }
 
+                query = query.TrimEnd(',', ' ');
                 query += " WHERE item_id = @ItemID";
                 parameters.Add(new MySqlParameter("@ItemID", itemID));
 
@@ -397,15 +398,13 @@ namespace EcommerceWebApp.Handlers
             }
         }
 
-
-        // Update Item 
         public void UpdateItem(int itemID, Item updatedItem)
         {
             using (var conn = new MySqlConnection(_connectionString))
             {
                 conn.Open();
 
-                string query = "UPDATE ITEM SET item_name = @ItemName, item_price = @ItemPrice, item_quantity = @ItemQuantity WHERE item_id = @ItemID";
+                string query = "UPDATE ITEM SET item_name = @ItemName, item_price = @ItemPrice, item_quantity = @ItemQuantity, item_description = @Description WHERE item_id = @ItemID";
 
                 using (var cmd = new MySqlCommand(query, conn))
                 {
@@ -413,14 +412,13 @@ namespace EcommerceWebApp.Handlers
                     cmd.Parameters.AddWithValue("@ItemName", updatedItem.ItemName);
                     cmd.Parameters.AddWithValue("@ItemPrice", updatedItem.ItemPrice);
                     cmd.Parameters.AddWithValue("@ItemQuantity", updatedItem.Quantity);
-
+                    cmd.Parameters.AddWithValue("@Description", updatedItem.Description);
                     cmd.ExecuteNonQuery();
                 }
             }
         }
 
 
-        // Delete Cart
         public void DeleteCart(int userID)
         {
             using (var conn = new MySqlConnection(_connectionString))
