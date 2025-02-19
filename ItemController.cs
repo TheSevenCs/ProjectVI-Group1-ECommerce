@@ -21,12 +21,20 @@ namespace EcommerceWebApp.Controllers
             _dbHandler = dbHandler;
         }
 
+        // POST: api/Item/add?name=Fish&price=6.99&quantity=10&description=Fresh%20fish
         [HttpPost("add")]
-        public ActionResult<Item> AddItem(string name, float price, int quantity)
+        public ActionResult<Item> AddItem(string name, float price, int quantity, string description)
         {
-            var newItem = new Item { ItemName = name, ItemPrice = price, Quantity = quantity };
-            _dbHandler.AddItem(name, price, quantity);
-            _logger.LogInformation($"Added item: {name}");
+           
+            var newItem = new Item 
+            { 
+                ItemName = name, 
+                ItemPrice = price, 
+                Quantity = quantity, 
+                Description = description 
+            };
+            _dbHandler.AddItem(name, price, quantity, description);
+            _logger.LogInformation($"Added item: {name} with description: {description}");
             return CreatedAtAction(nameof(GetItem), new { itemID = newItem.ItemID }, newItem);
         }
 
@@ -48,7 +56,6 @@ namespace EcommerceWebApp.Controllers
             var items = _dbHandler.GetAllItems();
             return items;
         }
-
 
         [HttpGet("category/{category}")]
         public ActionResult<List<Item>> GetItemsByCategory(string category)
