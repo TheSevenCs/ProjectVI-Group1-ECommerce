@@ -1,4 +1,4 @@
-﻿@model List<EcommerceWebApp.Models.Item>
+@model List<EcommerceWebApp.Models.Item>
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -57,6 +57,27 @@
     </form>
 </section>
 
+@* <section class="product-container">
+    <div class="product-grid">
+        @foreach (var item in Model)
+        {
+            <article class="product-card">
+                <div class="product-image">
+                    @* <img src="@Url.Content("~/" + item.ImagePath.TrimStart('/'))" alt="@item.ItemName" width="100" height="100"> 
+                </div>
+                <div class="product-info">
+                    <p class="description">@item.ItemName</p>
+                    <p class="price">
+                        <span class="dollar-symbol">$</span>
+                        <span class="amount">@item.ItemPrice</span>
+                    </p>
+                    <button class="add-button" onclick="addToCartAjax(@item.ItemID)">+</button>
+                </div>
+            </article>
+        }
+    </div>
+</section> *@
+
 <section class="product-container">
     <div class="product-grid">
         @foreach (var item in Model)
@@ -66,17 +87,19 @@
                     @* <img src="@Url.Content("~/" + item.ImagePath.TrimStart('/'))" alt="@item.ItemName" width="100" height="100"> *@
                 </div>
                 <div class="product-info">
+                    <p class="item-name">@item.ItemName</p>
+                    <p class="item-description">@item.Description</p>
                     <p class="price">
                         <span class="dollar-symbol">$</span>
                         <span class="amount">@item.ItemPrice</span>
                     </p>
-                    <p class="description">@item.ItemName</p>
                     <button class="add-button" onclick="addToCartAjax(@item.ItemID)">+</button>
                 </div>
             </article>
         }
     </div>
 </section>
+
 
 @section Scripts {
     <script>
