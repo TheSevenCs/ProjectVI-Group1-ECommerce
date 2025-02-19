@@ -25,7 +25,6 @@ namespace EcommerceWebApp.Controllers
         [HttpPost("add")]
         public ActionResult<Item> AddItem(string name, float price, int quantity, string description)
         {
-            // 创建新商品对象，同时设置描述字段
             var newItem = new Item 
             { 
                 ItemName = name, 
@@ -33,8 +32,6 @@ namespace EcommerceWebApp.Controllers
                 Quantity = quantity, 
                 Description = description 
             };
-
-            // 调用 DBHandler 方法新增商品，确保 DBHandler 也修改为接收 description
             _dbHandler.AddItem(name, price, quantity, description);
             _logger.LogInformation($"Added item: {name} with description: {description}");
             return CreatedAtAction(nameof(GetItem), new { itemID = newItem.ItemID }, newItem);
@@ -80,7 +77,6 @@ namespace EcommerceWebApp.Controllers
                 return NotFound();
             }
 
-            // updatedItem 包含新的描述信息
             _dbHandler.UpdateItem(itemID, updatedItem);
             return Ok(updatedItem);
         }
