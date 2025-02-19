@@ -12,39 +12,26 @@ namespace EcommerceWebApp.Controllers
         private readonly int _userID;
         private readonly DBHandler _dbHandler;
 
-        public ShoppingCartController(int userID, DBHandler dbHandler)
+        public ShoppingCartController(DBHandler dbHandler)
         {
-            _userID = userID;
             _dbHandler = dbHandler;
-
-            var existingCart = dbHandler.LoadCart(userID);
-            if (existingCart.items.Count == 0)
-            {
-                _shoppingCart = new ShoppingCart(userID);
-                _dbHandler.SaveCart(_shoppingCart);
-            }
-            else
-            {
-                _shoppingCart = existingCart;
-            }
+            _userID = GetUserIdFromContext(); // Retrieve userID dynamically
+            _shoppingCart = LoadOrCreateCart();
         }
 
-        public ShoppingCartController(int userID, List<Item> items, DBHandler dbHandler)
+        private int GetUserIdFromContext()
         {
-            _userID = userID;
-            _dbHandler = dbHandler;
-
-            if (items.Count == 0)
-            {
-                    _shoppingCart = new ShoppingCart(userID);
-                _dbHandler.SaveCart(_shoppingCart);
-            }
-            else
-            {
-                _shoppingCart = new ShoppingCart(userID, items);
-            }
+            var userID = HttpContext?.Request.Cookies["userID"];
+            return userID != null ? Math.Abs(userID.GetHashCode()) : 0;
         }
-            
+
+        private ShoppingCart LoadOrCreateCart()
+        {
+            var existingCart = _dbHandler.LoadCart(_userID);
+            return existingCart?.items.Count > 0 ? existingCart : new ShoppingCart(_userID);
+        }
+
+
         [HttpPost("add")]
         public IActionResult AddItemToCart(Item item)
         {
