@@ -12,6 +12,11 @@ builder.Services.AddSingleton<DBHandler>();
 builder.Services.AddScoped<ShoppingCartController>();
 builder.Services.AddScoped<ItemController>();
 
+// Explicitly configure Kestrel to listen on 0.0.0.0:8080
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(8080); // Ensures it works inside Docker
+});
 
 var app = builder.Build();
 
@@ -22,6 +27,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles(); // Correct method to serve static assets
 app.UseRouting();
 app.UseAuthorization();
 
@@ -36,13 +42,10 @@ else
     Console.WriteLine("Failed to connect to the database.");
 }
 
-// Map static assets
-app.MapStaticAssets();
-
 // Define MVC routes
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    pattern: "{controller=Home}/{action=Index}/{id?}"
+);
 
 app.Run();
